@@ -11,6 +11,7 @@ import * as BABYLON from 'babylonjs';
 import { float, int } from 'babylonjs';
 import { Fractal } from './fractal/fractal';
 import { CustomLoadingScreen } from './utils/CustomLoadingScreen';
+import { PlatformUtil } from './utils/PlatformUtil';
 
 // ======================================
 // performance tweakers
@@ -57,7 +58,7 @@ export class Game {
     // Initialization, gets canvas and creates engine
     constructor(canvasElement: string) {
         // lower rendering quality on mobile
-        if (this.isMobileDevice()) {
+        if (PlatformUtil.isMobileDevice()) {
             HW_SCALE_NORMAL = 2;
             HW_SCALE_VR = 2;
         }
@@ -68,11 +69,7 @@ export class Game {
     }
 
 
-    // Detects if running on mobile device
-    isMobileDevice(): boolean {
-        let mobile = (navigator.userAgent||navigator.vendor).match(/(quest|android|iphone|blackberry|ipod|kindle)/i) != null;
-        return mobile;
-    };
+
 
 
     // Create a few cameras
