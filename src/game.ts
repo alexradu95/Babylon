@@ -10,6 +10,7 @@
 import * as BABYLON from 'babylonjs';
 import { float, int } from 'babylonjs';
 import { Fractal } from './fractal/fractal';
+import { CustomLoadingScreen } from './utils/CustomLoadingScreen';
 
 // ======================================
 // performance tweakers
@@ -30,37 +31,7 @@ let USE_DEBUG_LAYER: boolean = false;              // enable debug inspector?
 let USE_CUSTOM_LOADINGSCREEN: boolean = false;    // enable custom loading screen?
 let HW_SCALE_NORMAL: float = 1;                  // scale in non-vr mode
 let HW_SCALE_VR: float = 1;                      // scale in vr mode
-let USE_ANTIALIAS: boolean = true;               // enable antialias?
-let USE_HDR: boolean = false;                     // enable hdr?
-let USE_GLOW: boolean = true;                    // enable glow?
-let USE_SHADOWS: boolean = true;                 // enable shadows?
 // ======================================
-
-
-//=============================================
-// Replace the default Babylonjs loading screen
-// with our own loading screen.
-
-// We can only show or hide the loading ui
-interface ILoadingScreen {
-    displayLoadingUI: () => void;
-    hideLoadingUI: () => void;
-    loadingUIBackgroundColor: string;
-}
-
-// Just show or hide the div with "Loading..." message
-class CustomLoadingScreen implements ILoadingScreen {
-    public loadingUIBackgroundColor: string
-    constructor(public loadingUIText: string) { }
-    public displayLoadingUI() {
-        document.getElementById("frontdiv").style.visibility = 'visible';
-    }
-
-    public hideLoadingUI() {
-        document.getElementById("frontdiv").style.visibility = 'hidden';
-    }
-}
-//=============================================
 
 
 // Main game class
@@ -87,16 +58,12 @@ export class Game {
     constructor(canvasElement: string) {
         // lower rendering quality on mobile
         if (this.isMobileDevice()) {
-            USE_HDR = false;
-            USE_ANTIALIAS = false;
-            USE_GLOW = true;
-            USE_SHADOWS = false;
             HW_SCALE_NORMAL = 2;
             HW_SCALE_VR = 2;
         }
 
         this._canvas = <HTMLCanvasElement>document.getElementById(canvasElement);
-        this._engine = new BABYLON.Engine(this._canvas, USE_ANTIALIAS);
+        this._engine = new BABYLON.Engine(this._canvas);
         this._engine.setHardwareScalingLevel(HW_SCALE_NORMAL);
     }
 
@@ -201,29 +168,6 @@ export class Game {
                 // create cameras
                 main.createCameras();
 
-                // create vfx pipeline
-                if (USE_HDR) {
-                    let pipeline = new BABYLON.DefaultRenderingPipeline("vfx", true, main._scene, main._cameras);
-                    pipeline.fxaaEnabled = USE_ANTIALIAS;
-
-                    // you can also add effects to the pipeline
-                    // bloom, for example:
-                    //pipeline.bloomEnabled = true;
-                    //pipeline.bloomThreshold = 0.4;
-                    //pipeline.bloomWeight = 0.8;
-                    //pipeline.bloomKernel = 64;
-                    //pipeline.bloomScale = 0.5;
-                }
-
-                // enable glow
-                if (USE_GLOW) {
-                    let gl = new BABYLON.GlowLayer("glow", main._scene, {
-                        mainTextureFixedSize: 512,
-                        blurKernelSize: 64
-                    });
-                    gl.intensity = 0.5;
-                }
-
                 // create some lights
                 main._light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), main._scene);
                 main._light1.intensity = 0.9;
@@ -231,11 +175,7 @@ export class Game {
 
                 // create shadows generator
                 main._light2 = new BABYLON.DirectionalLight("light2", new BABYLON.Vector3(0, -0.95, -0.75), main._scene);
-                if (USE_SHADOWS) {
-                    main._shadowgen = new BABYLON.ShadowGenerator(1024, main._light2);
-                    main._shadowgen.useBlurExponentialShadowMap = true;
-                    main._shadowgen.blurKernel = 32;
-                }
+
 
                 // initialize fractal
                 // note: i really wanted fractals running fast enough under Quest...
@@ -260,13 +200,6 @@ export class Game {
                             console.log("Found a ground");
                             main._grounds.push(meshes[i]);
                         }
-                        // now, this is very specific to the template:
-                        // if we find the mesh called "Suzanne",
-                        // we make it cast shadows
-                        else if (USE_SHADOWS && meshes[i].name.substring(0,2) === "S_") {
-                            console.log("Found a shadow caster");
-                            main._shadowgen.addShadowCaster(meshes[i], true);
-                        }
                         
                         // on another if thread, we also look for a specific mesh from our scene,
                         // because we want to make it move slowly while the "game" is played
@@ -278,14 +211,6 @@ export class Game {
                             main._suzanne.position.set(0, 3.15, 1.2);
 
                             console.log("Found suzanne");
-                        }
-
-                        // enable shadow receiving if we want shadows
-                        meshes[i].receiveShadows = USE_SHADOWS;
-                        if (meshes[i].subMeshes) {
-                            for (var j = 0; j < meshes[i].subMeshes.length; j++) {
-                                meshes[i].subMeshes[j].getMesh().receiveShadows = USE_SHADOWS;
-                            }
                         }
                     }
 
