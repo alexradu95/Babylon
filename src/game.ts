@@ -9,7 +9,6 @@
 
 import * as BABYLON from 'babylonjs';
 import { float, int } from 'babylonjs';
-import { Fractal } from './fractal/fractal';
 import { CustomLoadingScreen } from './utils/CustomLoadingScreen';
 import { PlatformUtil } from './utils/PlatformUtil';
 
@@ -43,16 +42,10 @@ export class Game {
     private _canvas: HTMLCanvasElement;
     private _engine: BABYLON.Engine;
     private _scene: BABYLON.Scene;
-    private _music: BABYLON.Sound;
     private _cameras: BABYLON.Camera[];
     private _curcamera: int = 0;
-    private _light1: BABYLON.Light;
-    private _light2: BABYLON.ShadowLight;
-    private _shadowgen: BABYLON.ShadowGenerator;
     private _xrhelper: BABYLON.WebXRDefaultExperience;
     private _grounds: BABYLON.AbstractMesh[] = new Array<BABYLON.AbstractMesh>();
-    private _suzanne: BABYLON.AbstractMesh;
-    private _fractal: Fractal;
 
 
     // Initialization, gets canvas and creates engine
@@ -165,24 +158,6 @@ export class Game {
                 // create cameras
                 main.createCameras();
 
-                // create some lights
-                main._light1 = new BABYLON.HemisphericLight("light1", new BABYLON.Vector3(0, 1, 0), main._scene);
-                main._light1.intensity = 0.9;
-                main._light1.specular = BABYLON.Color3.White();
-
-                // create shadows generator
-                main._light2 = new BABYLON.DirectionalLight("light2", new BABYLON.Vector3(0, -0.95, -0.75), main._scene);
-
-
-                // initialize fractal
-                // note: i really wanted fractals running fast enough under Quest...
-                // but it's not there yet... it runs, but slow.
-                // still, looks nice when looking from the inside of the fractal.
-                // maybe, if time permits, i'll revisit this and optimize for the Quest specifically.
-                let bbox = new BABYLON.Vector3(3., 3., 3.);
-                main._fractal = new Fractal("menger", bbox, main._scene);
-                main._fractal.position.set(0, 0, 0);
-
                 // We will wait until the base scene is fully loaded
                 // to allow the user to close the loading ui.
                 BABYLON.SceneLoader.ImportMesh("", "assets/scenes/", "base_scene.glb", main._scene, async function (meshes, particles, skeletons) {
@@ -196,18 +171,6 @@ export class Game {
                         if (meshes[i].name.substring(0, 2) === "G_") {
                             console.log("Found a ground");
                             main._grounds.push(meshes[i]);
-                        }
-                        
-                        // on another if thread, we also look for a specific mesh from our scene,
-                        // because we want to make it move slowly while the "game" is played
-                        if (meshes[i].name == "S_Suzanne")
-                        {
-                            main._suzanne = meshes[i];
-
-                            // move our suzanne
-                            main._suzanne.position.set(0, 3.15, 1.2);
-
-                            console.log("Found suzanne");
                         }
                     }
 
@@ -253,10 +216,6 @@ export class Game {
         // hide the loading ui
         this._engine.hideLoadingUI();
 
-        // start background music loop
-        this._music = new BABYLON.Sound("ambience", "assets/audio/loop.mp3", this._scene, null, { loop: true, autoplay: true, volume: 1 });
-
-        // get the fps div to show fps count
         this._fps = document.getElementById("fps");
 
         // process cameras toggle
@@ -308,9 +267,6 @@ export class Game {
                         this._cameras[this._curcamera].position = dir;
                     }
             }
-
-            // update fractal
-            this._fractal.update(this._light2.direction, this._scene.activeCamera.position);
         });
 
         // render loop
