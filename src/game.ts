@@ -9,7 +9,6 @@
 
 import * as BABYLON from 'babylonjs';
 import { float, int } from 'babylonjs';
-import { CustomLoadingScreen } from './utils/CustomLoadingScreen';
 import { PlatformUtil } from './utils/PlatformUtil';
 
 // ======================================
@@ -21,23 +20,18 @@ import { PlatformUtil } from './utils/PlatformUtil';
 // 1 = default scale (normal speed)
 // above 1 = lower resolution (faster)
 // below 1 = higher resolution (slower)
-//
-// hdr and shadows are very expensive on mobiles;
-// depending on project you might want to have
-// them enabled and render at a lower resolution
-// to compensate.
-//
+// ======================================
+
 let USE_DEBUG_LAYER: boolean = false;              // enable debug inspector?
 let USE_CUSTOM_LOADINGSCREEN: boolean = false;    // enable custom loading screen?
-let HW_SCALE_NORMAL: float = 1;                  // scale in non-vr mode
-let HW_SCALE_VR: float = 1;                      // scale in vr mode
+let HW_SCALE_NORMAL: float = 2;                  // scale in non-vr mode
+let HW_SCALE_VR: float = 2;                      // scale in vr mode
 // ======================================
 
 
 // Main game class
 export class Game {
 
-    private _loadingScreen: CustomLoadingScreen = null;
     private _fps: HTMLElement;
     private _canvas: HTMLCanvasElement;
     private _engine: BABYLON.Engine;
@@ -50,12 +44,6 @@ export class Game {
 
     // Initialization, gets canvas and creates engine
     constructor(canvasElement: string) {
-        // lower rendering quality on mobile
-        if (PlatformUtil.isMobileDevice()) {
-            HW_SCALE_NORMAL = 2;
-            HW_SCALE_VR = 2;
-        }
-
         this._canvas = <HTMLCanvasElement>document.getElementById(canvasElement);
         this._engine = new BABYLON.Engine(this._canvas);
         this._engine.setHardwareScalingLevel(HW_SCALE_NORMAL);
@@ -139,13 +127,6 @@ export class Game {
 
         return new Promise(
             function (resolve, reject) {
-                // show loading ui
-                // uncomment the next two lines to replace the
-                // default loading ui with the custom ui
-                if (USE_CUSTOM_LOADINGSCREEN) {
-                    main._loadingScreen = new CustomLoadingScreen("");
-                    main._engine.loadingScreen = main._loadingScreen;
-                }
                 main._engine.displayLoadingUI();
 
                 // create main scene
