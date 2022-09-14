@@ -15,11 +15,6 @@ window.addEventListener('DOMContentLoaded', () => {
   // create game instance
   let game = new Game('renderCanvas');
 
-  // when createScene() finishes loading,
-  // it will return a promise
-  // and we will finally run the game
-  game.createScene().then(() => {
-    console.log("Running...");
-    game.run();
-  });
+  game.createScene();
+  game.run();
 });

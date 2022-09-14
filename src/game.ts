@@ -8,7 +8,7 @@
 // ===========================-===--======- -    -
 
 import * as BABYLON from 'babylonjs';
-import { float, int } from 'babylonjs';
+import { float, int, Vector3 } from 'babylonjs';
 import { PlatformUtil } from './utils/PlatformUtil';
 
 // ======================================
@@ -22,7 +22,7 @@ import { PlatformUtil } from './utils/PlatformUtil';
 // below 1 = higher resolution (slower)
 // ======================================
 
-let USE_DEBUG_LAYER: boolean = false;              // enable debug inspector?
+let USE_DEBUG_LAYER: boolean = true;              // enable debug inspector?
 let HW_SCALE_NORMAL: float = 2;                  // scale in non-vr mode
 let HW_SCALE_VR: float = 2;                      // scale in vr mode
 // ======================================
@@ -82,25 +82,32 @@ export class Game {
     // Creates the main Scene
     // with a basic model and a default environment;
     // it will also prepare for XR where available.
-    createScene(): Promise<boolean> {
+    createScene(): void {
         let main = this;
 
-        return new Promise(
-            function (resolve, reject) {
                 main._engine.displayLoadingUI();
 
                 // create main scene
                 main._scene = new BABYLON.Scene(main._engine);
 
-                // create cameras
-                main._camera = new BABYLON.ArcRotateCamera("Camera", Math.PI / 2, Math.PI / 2, 4, BABYLON.Vector3.Zero(), main._scene);
-                main._camera.attachControl(main._canvas, true);
+                // Parameters : name, position, scene
+                var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0,15,0), main._scene);
+                let light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 15, 0),  main._scene);
 
-                let light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(1, 1, 0),  main._scene);
+                // Targets the camera to a particular position. In this case the scene origin
+                camera.setTarget(new Vector3(0,1,0));
+
+                // Attach the camera to the canvas
+                camera.attachControl(main._canvas, true);
+
                 let env = main._scene.createDefaultEnvironment({});
                 main._grounds.push(env.ground);
 
-                const cone = BABYLON.MeshBuilder.CreateCylinder("cone", {}); 
+                this.createClockBack();
+                this.createOre();
+                this.createLimbaOre();
+                this.createLimbaMinute();
+                this.createLimbaSecunde();
 
                 // ready to play
                 if (USE_DEBUG_LAYER) main._scene.debugLayer.show();
@@ -112,8 +119,58 @@ export class Game {
 
                 // just open the default xr env
                 main.createDefaultXr();
-                resolve(true);
+    }
+
+        createLimbaSecunde() {
+            const cone = BABYLON.MeshBuilder.CreateBox("ora", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            cone.scaling = new Vector3(0.1, 0.1, 4);
+            cone.position = new Vector3(0.9,-1,2);
+            cone.setPivotPoint(new BABYLON.Vector3(0, -1, 0));
+        }
+
+        createLimbaMinute() {
+
+        }
+
+        createLimbaOre() {
+
+        }
+
+
+    private createClockBack() {
+        const cone = BABYLON.MeshBuilder.CreateCylinder("cone", {});
+        cone.scaling = new Vector3(10, 0.1, 10);
+        cone.position = new Vector3(0,1.5,0);
+    }
+
+    private createOre() {
+
+        const nArrows = 12;
+        const arrowMesh = BABYLON.MeshBuilder.CreateCylinder('arrowheads', {
+            height: 0.5,
+            diameterBottom: 0.25,
+            diameterTop: 0.0,
+            tessellation: 4
             });
+        arrowMesh.isVisible = false;
+    
+        arrowMesh.registerInstancedBuffer("color", 4);
+    
+        arrowMesh.material = new BABYLON.StandardMaterial('arrow_mat');
+    
+        for(let ix = 0; ix < nArrows; ix++) {
+            const instance = arrowMesh.createInstance('arrow' + ix);
+    
+            instance.instancedBuffers.color = new BABYLON.Color4((ix+0)%3==0 ? 1 : 0, (ix+1)%3==0 ? 1 : 0, (ix+2)%3==0 ? 1 : 0, 1);
+    
+            const angle = BABYLON.Tools.ToRadians(ix*360/nArrows);
+    
+            instance.position.x = 4*Math.sin(angle);
+            instance.position.y = 1.9;
+            instance.position.z = 4*Math.cos(angle);
+    
+        }
+    
     }
 
 
