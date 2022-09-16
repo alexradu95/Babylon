@@ -101,7 +101,7 @@ export class Game {
                 // Parameters : name, position, scene
                 var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 20, 0), this._scene);
                 camera.setTarget(BABYLON.Vector3.Zero());
-                camera.attachControl(this._canvas, true);
+                //camera.attachControl(this._canvas, true);
 
                 let light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 15, 0),  main._scene);
 
@@ -109,7 +109,6 @@ export class Game {
                 camera.setTarget(new Vector3(0,1,0));
 
                 // Attach the camera to the canvas
-                //camera.attachControl(main._canvas, true);
 
                 let env = main._scene.createDefaultEnvironment({});
                 main._grounds.push(env.ground);
@@ -128,19 +127,22 @@ export class Game {
     }
 
         createLimbaSecunde() {
-            this.limbaSecunde = BABYLON.MeshBuilder.CreateBox("secunde", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            this.limbaSecunde = BABYLON.MeshBuilder.CreateBox("secunde", {faceColors: [new BABYLON.Color4(1,1,1,1),new BABYLON.Color4(1,1,1,1),new BABYLON.Color4(1,1,1,1),new BABYLON.Color4(1,1,1,1),new BABYLON.Color4(0,0,0,1),new BABYLON.Color4(0,0,0,1),new BABYLON.Color4(0,0,0,1)]});
             this.limbaSecunde.scaling = new Vector3(0.1, 0.1, 4);
             this.limbaSecunde.position = new Vector3(0,0.2,0.5);
             this.limbaSecunde.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
             this.limbaSecunde.outlineColor = BABYLON.Color3.Black();  
-            
+
+            // My attempt to color the sphere
+            var material = new BABYLON.StandardMaterial(this.limbaSecunde);
+            material.alpha = 1;
             this.rotatielimbaSecunde = new Vector3();
             this.limbaSecunde.rotation = this.rotatielimbaSecunde;
 
         }
 
         createLimbaMinute() {
-            this.limbaMinute = BABYLON.MeshBuilder.CreateBox("minute", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            this.limbaMinute = BABYLON.MeshBuilder.CreateBox("minute", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(0.6,0.2,0.3,1),new BABYLON.Color4(0.6,0.2,0.3,1),new BABYLON.Color4(0.6,0.2,0.3,1),new BABYLON.Color4(0.6,0.2,0.3,1)]});
             this.limbaMinute.scaling = new Vector3(0.1, 0.1, 3.5);
             this.limbaMinute.position = new Vector3(0,0.3,0.5);
 
