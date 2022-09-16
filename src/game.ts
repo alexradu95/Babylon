@@ -91,14 +91,17 @@ export class Game {
                 main._scene = new BABYLON.Scene(main._engine);
 
                 // Parameters : name, position, scene
-                var camera = new BABYLON.UniversalCamera("UniversalCamera", new BABYLON.Vector3(0,15,0), main._scene);
+                var camera = new BABYLON.FreeCamera("camera1", new BABYLON.Vector3(0, 20, 0), this._scene);
+                camera.setTarget(BABYLON.Vector3.Zero());
+                camera.attachControl(this._canvas, true);
+
                 let light = new BABYLON.HemisphericLight("light", new BABYLON.Vector3(0, 15, 0),  main._scene);
 
                 // Targets the camera to a particular position. In this case the scene origin
                 camera.setTarget(new Vector3(0,1,0));
 
                 // Attach the camera to the canvas
-                camera.attachControl(main._canvas, true);
+                //camera.attachControl(main._canvas, true);
 
                 let env = main._scene.createDefaultEnvironment({});
                 main._grounds.push(env.ground);
@@ -111,29 +114,32 @@ export class Game {
 
                 // ready to play
                 if (USE_DEBUG_LAYER) main._scene.debugLayer.show();
-                console.log("All resources loaded!");
-
-                // enable user click to close loading screen
-                document.getElementById("frontdiv2").innerHTML = "<h2>CLICK TO START</h2>"
-                document.getElementById("frontdiv").style.cursor = "pointer";
-
+                
                 // just open the default xr env
                 main.createDefaultXr();
     }
 
         createLimbaSecunde() {
-            const cone = BABYLON.MeshBuilder.CreateBox("ora", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            const cone = BABYLON.MeshBuilder.CreateBox("secunde", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
             cone.scaling = new Vector3(0.1, 0.1, 4);
-            cone.position = new Vector3(0.9,-1,2);
-            cone.setPivotPoint(new BABYLON.Vector3(0, -1, 0));
+            cone.position = new Vector3(0,1.6,0.5);
+            cone.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
         }
 
         createLimbaMinute() {
-
+            const cone = BABYLON.MeshBuilder.CreateBox("minute", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            cone.scaling = new Vector3(0.1, 0.1, 3.5);
+            cone.position = new Vector3(0,1.6,0.5);
+            cone.rotation = new Vector3(0,45,0);
+            cone.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
         }
 
         createLimbaOre() {
-
+            const cone = BABYLON.MeshBuilder.CreateBox("ore", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            cone.scaling = new Vector3(0.1, 0.1, 3);
+            cone.position = new Vector3(0,1.6,0.5);
+            cone.rotation = new Vector3(0,30,0);
+            cone.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
         }
 
 
