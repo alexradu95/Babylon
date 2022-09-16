@@ -166,7 +166,7 @@ export class Game {
 
     private createOre() {
 
-        const nArrows = 12;
+        const nArrows = 60;
         const arrowMesh = BABYLON.MeshBuilder.CreateCylinder('arrowheads', {
             height: 0.5,
             diameterBottom: 0.25,
@@ -189,6 +189,10 @@ export class Game {
             instance.position.x = 4*Math.sin(angle);
             instance.position.y = 0.5;
             instance.position.z = 4*Math.cos(angle);
+
+            if(ix % 5 != 0 ) {
+                instance.scaling = new Vector3(0.2,0.2,0.2);
+            }
     
         }
     
