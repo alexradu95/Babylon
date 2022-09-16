@@ -39,6 +39,14 @@ export class Game {
     private _xrhelper: BABYLON.WebXRDefaultExperience;
     private _grounds: BABYLON.AbstractMesh[] = new Array<BABYLON.AbstractMesh>();
 
+    private limbaMinute;
+    private limbaSecunde;
+    private limbaOre;
+
+    private rotatielimbaMinute : Vector3;
+    private rotatielimbaSecunde : Vector3;
+    private rotatielimbaOre : Vector3;
+
 
     // Initialization, gets canvas and creates engine
     constructor(canvasElement: string) {
@@ -120,33 +128,40 @@ export class Game {
     }
 
         createLimbaSecunde() {
-            const cone = BABYLON.MeshBuilder.CreateBox("secunde", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
-            cone.scaling = new Vector3(0.1, 0.1, 4);
-            cone.position = new Vector3(0,1.6,0.5);
-            cone.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
+            this.limbaSecunde = BABYLON.MeshBuilder.CreateBox("secunde", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            this.limbaSecunde.scaling = new Vector3(0.1, 0.1, 4);
+            this.limbaSecunde.position = new Vector3(0,0.2,0.5);
+            this.limbaSecunde.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
+            this.limbaSecunde.outlineColor = BABYLON.Color3.Black();  
+            
+            this.rotatielimbaSecunde = new Vector3();
+            this.limbaSecunde.rotation = this.rotatielimbaSecunde;
+
         }
 
         createLimbaMinute() {
-            const cone = BABYLON.MeshBuilder.CreateBox("minute", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
-            cone.scaling = new Vector3(0.1, 0.1, 3.5);
-            cone.position = new Vector3(0,1.6,0.5);
-            cone.rotation = new Vector3(0,45,0);
-            cone.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
+            this.limbaMinute = BABYLON.MeshBuilder.CreateBox("minute", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            this.limbaMinute.scaling = new Vector3(0.1, 0.1, 3.5);
+            this.limbaMinute.position = new Vector3(0,0.3,0.5);
+
+            this.limbaMinute.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
+            this.rotatielimbaMinute = new Vector3();
+            this.limbaMinute.rotation = this.rotatielimbaMinute;
         }
 
         createLimbaOre() {
-            const cone = BABYLON.MeshBuilder.CreateBox("ore", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
-            cone.scaling = new Vector3(0.1, 0.1, 3);
-            cone.position = new Vector3(0,1.6,0.5);
-            cone.rotation = new Vector3(0,30,0);
-            cone.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
+            this.limbaOre = BABYLON.MeshBuilder.CreateBox("ore", {faceColors: [new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1),new BABYLON.Color4(1,0,1,1)]});
+            this.limbaOre.scaling = new Vector3(0.1, 0.1, 3);
+            this.limbaOre.position = new Vector3(0,0.4,0.5);
+            this.limbaOre.setPivotPoint(new BABYLON.Vector3(0, 0, -0.5));
+            this.rotatielimbaOre = new Vector3();
+            this.limbaOre.rotation = this.rotatielimbaOre;
         }
 
 
     private createClockBack() {
         const cone = BABYLON.MeshBuilder.CreateCylinder("cone", {});
         cone.scaling = new Vector3(10, 0.1, 10);
-        cone.position = new Vector3(0,1.5,0);
     }
 
     private createOre() {
@@ -172,7 +187,7 @@ export class Game {
             const angle = BABYLON.Tools.ToRadians(ix*360/nArrows);
     
             instance.position.x = 4*Math.sin(angle);
-            instance.position.y = 1.9;
+            instance.position.y = 0.5;
             instance.position.z = 4*Math.cos(angle);
     
         }
@@ -195,6 +210,12 @@ export class Game {
         // render loop
         this._engine.runRenderLoop(() => {
             this._scene.render();
+
+            let currentDate = new Date();
+
+            this.rotatielimbaSecunde.y =  BABYLON.Tools.ToRadians(360 * (currentDate.getSeconds() / 60) + 180);
+            this.rotatielimbaMinute.y = BABYLON.Tools.ToRadians(360 * (currentDate.getMinutes() / 60) + 180);
+            this.rotatielimbaOre.y = BABYLON.Tools.ToRadians(360 * (currentDate.getHours() / 12) + 180);
         });
 
         // resize event handler
